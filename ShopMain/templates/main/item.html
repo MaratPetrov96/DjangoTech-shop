@@ -1,5 +1,6 @@
 {% extends 'main/Base.html' %}
 {% block main %}
+<strong>{{one.title}}</strong>
 <img src='{{one.picture.url}}' width='700' height='500'>
 <p>Цена: {{one.price}} рублей</p>
 {{ one.description | linebreaks }}
