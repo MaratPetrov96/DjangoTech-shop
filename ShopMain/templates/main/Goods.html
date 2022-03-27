@@ -1,0 +1,48 @@
+{% extends 'main/Base.html' %}
+{% block main %}
+<script>
+  $( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: {{mn}},
+      max: {{mx}},
+      values: [ {{min}}, {{max}} ],
+      slide: function( event, ui ) {
+        $( "#amount_min" ).val(ui.values[ 0 ]+"$");
+		$( "#amount_max" ).val(ui.values[ 1 ]+"$");
+		{% if search %}
+		window.location = "{% url 'search_price' query 2 10 %}".replace('2',ui.values[ 0 ]).replace('10',ui.values[ 1 ]);
+		{% else %}
+		window.location = "{% url 'subcategory' one.category.translit one.translit 2 10 %}".replace('2',ui.values[ 0 ]).replace('10',ui.values[ 1 ]);
+		{% endif %}
+      }
+    });
+    $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+  } );
+  </script>
+ <input type='hidden' value={{query}}>
+<label for="amount" class='amount'>Price range:</label>
+  <input type="text" id="amount_min" readonly value='{{min}}$'>
+  <input type="text" id="amount_max" readonly value='{{max}}$'>
+<div id="slider-range"></div>
+{% if search_ %}
+<p>
+По запросу {{query}} найдено {{count_}} товаров
+{% endif %}
+</p>
+{% for item in data %}
+<div class='item'>
+<img src={{item.picture.url}} width='150' height='200'>
+<a href="{% url 'item' item.pk %}">{{item.title}}</a>
+<p>{{item.price}}</p>
+</div>
+{% endfor %}
+<div class='pages'>
+{% if search %}
+{% include 'main/Search.html' %}
+{% else %}
+{% include 'main/CategoryPages.html' %}
+{% endif %}
+</div>
+{% endblock %}

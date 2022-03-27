@@ -1,0 +1,15 @@
+{% extends 'main\Base.html' %}
+{% block main %}
+{% for i in user.orders.all %}
+<div class='order'>
+<p>Заказ № {{i.pk}}</p>
+{% for j in i.goods.all %}
+<div class='item_busket'>
+<img src='{{j.picture.url}}' width=110 height=100>
+<p><a href="{% url 'item' j.pk %}">{{j.title}}</a></p>
+</div>
+{% endfor %}
+<p>Итого: {{ i.price }} руб.</p>
+</div>
+{% endfor %}
+{% endblock %}

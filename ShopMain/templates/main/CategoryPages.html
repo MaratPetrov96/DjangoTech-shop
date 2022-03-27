@@ -1,0 +1,15 @@
+{% if data.has_previous %}
+{% if price %}
+<a href="{% url 'subcategory' one.category.translit one.translit min max data.previous_page_number %}">{{data.previous_page_number}}</a>
+{% else %}
+<a href="{% url 'subcategory_page' one.category.translit one.translit data.previous_page_number %}">{{data.previous_page_number}}</a>
+{% endif %}
+{% endif %}
+<span>{{data.number}}</span>
+{% if data.has_next %}
+{% if price %}
+<a href="{% url 'subcategory' one.category.translit one.translit min max data.next_page_number %}">{{data.next_page_number}}</a>
+{% else %}
+<a href="{% url 'subcategory_page' one.category.translit one.translit data.next_page_number %}">{{data.next_page_number}}</a>
+{% endif %}
+{% endif %}

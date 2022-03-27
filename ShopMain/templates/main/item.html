@@ -1,0 +1,38 @@
+{% extends 'main/Base.html' %}
+{% block main %}
+<img src='{{one.picture.url}}' width='700' height='500'>
+<p>Цена: {{one.price}} рублей</p>
+{{ one.description | linebreaks }}
+{% if one.in_store %}
+{% if one not in request.user.busket.goods.all %}
+<form action='/add/{{one.pk}}' method='POST'>
+{% csrf_token %}
+<button type='submit' class='btn_add'>Добавить в корзину</button>
+</form>
+{% endif %}
+{% else %}
+<p>Нет в наличии</p>
+{% endif %}
+{% if user_review %}
+<form action='/review/{{one.pk}}' method='POST'>
+{% csrf_token %}
+{{form_.as_table}}
+<div class='contatiner'>
+<div class='star-widget'>
+{% for n in range %}
+<input type="radio" name="rate" id="rate-{{n}}" style='display:none;' value={{n}}>
+        <label for="rate-{{n}}" class="fas fa-star"></label>
+{% endfor %}
+</div>
+</div>
+<input type='submit' value='Отправить'>
+</form>
+{% endif %}
+{% for i in reviews %}
+<div class='review'>
+<p>{{i.user.username}}</p>
+<p>Оценка: {{i.stars}}</p>
+{{i.content | linebreaks}}
+</div>
+{% endfor %}
+{% endblock %}

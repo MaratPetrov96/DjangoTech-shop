@@ -1,0 +1,23 @@
+{% extends 'main/Base.html' %}
+{% block main %}
+{% for item in data %}
+<div class='item'>
+<img src={{item.picture.url}} width='150' height='200'>
+<a href="{% url 'item' item.pk %}">{{item.title}}</a>
+<p>{{item.price}}</p>
+<form method='POST' action="{% url 'delete' item.pk %}">
+{% csrf_token %}
+<button>Удалить</button>
+</form>
+</div>
+{% endfor %}
+{% if data %}
+<p>Сумма: {{ busket.price }} руб.</p>
+<form action="{% url 'pay' busket.price %}" method='POST'>
+{% csrf_token %}
+<input type='submit' value='Сделать заказ'>
+</form>
+{% else %}
+<p>Корзина пуста</p>
+{% endif %}
+{% endblock %}
