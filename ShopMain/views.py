@@ -8,17 +8,16 @@ from django.db.models import Q
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .models import *
 from .forms import *
-import json
 
-def main(request):
+def main(request): #главная страница
     return render(request,'main/main.html',{'user':request.user,'title':'DjangoTech - интернет-магазин бытовой техники',
                                             'categories':Category.objects.all()})
 
-def about(request):
+def about(request): # "О нас"
     return render(request,'main/about.html',{'user':request.user,'title':'DjangoTech - о нас'
                                              ,'categories':Category.objects.all()})
 
-class ItemView(DetailView):
+class ItemView(DetailView): #карточка товара
     model = Item
     template_name = 'main/item.html'
     context_object_name = 'one'
@@ -44,7 +43,7 @@ class ItemView(DetailView):
         context['categories'] = Category.objects.all()
         return context
 
-class SubcategoryView(DetailView):
+class SubcategoryView(DetailView): #подкатегория
     model = Subcategory
     template_name = 'main/Goods.html'
     context_object_name = 'one'
@@ -66,7 +65,7 @@ class SubcategoryView(DetailView):
         context['mn'] = min(context['data'].values_list('price',flat=True))
         context['mx'] = max(context['data'].values_list('price',flat=True))
         context['price'] = False
-        try:
+        try: #фильтрация по ценам
             context['min'] = self.kwargs['min_']
             context['max'] = self.kwargs['max_']
         except:
@@ -84,7 +83,7 @@ class SubcategoryView(DetailView):
             pass
         return context
 
-class BusketView(UserPassesTestMixin,DetailView):
+class BusketView(UserPassesTestMixin,DetailView): #корзина
     model = Busket
     template_name = 'main/Busket.html'
     context_object_name = 'busket'
@@ -99,7 +98,7 @@ class BusketView(UserPassesTestMixin,DetailView):
         context['data'] = self.object.goods.all()
         return context
 
-@login_required
+@login_required #добавление товара в корзину
 def add(request,pk):
     if request.method == 'POST':
         busk = request.user.busket
@@ -108,19 +107,12 @@ def add(request,pk):
         busk.save()
         return redirect('item',pk)
 
-@login_required
-def remove(request,pk):
-    if request.method == 'POST':
-        busk = request.user.busket
-        busk.goods.remove(Item.objects.get(pk=pk))
-        return redirect('item',pk)
-
-@login_required
+@login_required #форма платежа
 def pay(request,summ):
     if request.method == 'POST':
         return render(request,'main/Pay.html',{'user':request.user,'categories':Category.objects.all(),'summ':summ,'title':'Платёж'})
 
-@login_required
+@login_required #"оплата заказа")
 def order(request):
     if request.method == 'POST':
         new = Order(user=request.user)
@@ -132,12 +124,6 @@ def order(request):
         message += '\n\n'.join(request.user.busket.goods.values_list('title',flat=True))
         message += f'\n\n{new.price}'
         message += f'\n\nID пользователя: {request.user.pk}'
-        '''connection = get_connection(
-            host=settings.EMAIL_HOST,
-            port=settings.EMAIL_PORT,
-            username=settings.EMAIL_HOST_USER,
-            password=settings.EMAIL_HOST_PASSWORD
-        )'''
         send_mail(f'Заказ № {new.pk}',
                   message,
                   settings.EMAIL_HOST_USER,
@@ -148,10 +134,12 @@ def order(request):
         bus.save()
         return render(request,'main/Success.html',{'user':request.user,'categories':Category.objects.all()})
 
-def search(request):
-    return redirect('search',request.POST['query'])
+def search(request): #поиск
+    if request.method === 'POST':
+        return redirect('search',request.POST['query'])
+#поиск сделан так чтобы можно было сохранить ссылку на его результаты
 
-def search_res(request,query,pg=None,min_=None,max_=None):
+def search_res(request,query,pg=None,min_=None,max_=None): #результат поиска
     if not pg:
         pg = 1
     data = Item.objects.filter(
@@ -172,7 +160,7 @@ def search_res(request,query,pg=None,min_=None,max_=None):
                                              'max':max_,'mn':mn,'mx':mx,'count_':count})
 
 @login_required
-def review(request,pk):
+def review(request,pk): #отзыв
     new = ReviewForm(request.POST)
     new = new.save(commit=False)
     new.user = request.user
@@ -182,7 +170,7 @@ def review(request,pk):
     new.save()
     return redirect('item',object_.pk)
 
-@login_required
+@login_required #удаление из корзины
 def delete_busket(request,pk):
     bus = request.user.busket
     bus.goods.remove(Item.objects.get(pk=pk))
