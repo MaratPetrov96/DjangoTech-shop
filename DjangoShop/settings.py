@@ -135,12 +135,6 @@ MEDIA_URL = '/media/'
 #EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST_YA = 'smtp.yandex.ru'
-#EMAIL_PORT_YA = 465
-#EMAIL_HOST_USER_YA = 'maratpython@yandex.ru'
-#EMAIL_HOST_PASSWORD_YA = 'm1a2r3t4a5'
-#EMAIL_USE_TLS = False
-#EMAIL_USE_SSL = True
 
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
